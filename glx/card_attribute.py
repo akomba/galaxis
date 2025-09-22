@@ -23,10 +23,10 @@ class CardAttribute(object):
         if self.attribute.config("max"):
             value = self.attribute.config("max") if self.attribute.config("max") < value else value
 
-        return self.api.add_attribute_to_card(self.card.collection.id,self.card.id,self.id,value)
+        return self.api.add_attribute_to_card(self.collection_id,self.card_id,self.id,value)
 
     def remove(self):
-        return self.api.remove_attribute_from_card(self.card.collection.id,self.card.id,self.id)
+        return self.api.remove_attribute_from_card(self.collection_id,self.card_id,self.id)
 
     #def get_instance(cls,community_name, collection_id, card_id, attribute_id):
     #    api = CommunityApi(community_name)
