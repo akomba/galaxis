@@ -78,7 +78,6 @@ class CommunityApi(object):
         res = api_helper.call_api(url)
         # FIXME temp data massage
         # get card attribute ids
-        catts = self.get_card_attributes()
 
         card = {}
         card["id"] = res["token_id"]
@@ -88,9 +87,9 @@ class CommunityApi(object):
         card["subscription_data"] = res["subscription_data"]
         card["is_banned_from_commenting"] = res["is_banned_from_commenting"]
         card["referrer"] = res["referrer"]
-        card["attribute_ids"] 
+        card["attribute_ids"] = [a["attribute_id"] for a in self.get_card_attributes(collection_id,card_id)]
 
-        return res
+        return card
     
     #def get_cards_with_attribute(self,attribute_id):
     #    url= self.url+"/attributes/"+str(attribute_id)+"/cards"
@@ -156,7 +155,7 @@ class CommunityApi(object):
         query = kwargs.get('query', None)
         url = self.url+"/attributes/"+str(attribute_id)+"/cards"
         res = api_helper.call_api(url)["data"]
-       
+      
         if not query:
             query={}
         
