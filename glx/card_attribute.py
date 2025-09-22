@@ -5,16 +5,18 @@ from glx.attribute import Attribute
 class CardAttribute(object):
     def __init__(self, community_name, collection_id, card_id, attribute_id):
         self.card_id = card_id
+        self.community_name = community_name
+        self.collection_id = collection_id
         self.id = attribute_id
         self.api = CommunityApi(community_name)
         self.attribute = Attribute(community_name, collection_id, attribute_id)
     
     def value(self):
-        res = self.api.get_card_attribute(self.card.collection.id,self.card.id,self.id)
+        res = self.api.get_card_attribute(self.collection_id,self.card_id,self.id)
         return res["value"]
 
     def interacted_at(self):
-        res = self.api.get_card_attribute(self.card.collection.id,self.card.id,self.id)
+        res = self.api.get_card_attribute(self.collection_id,self.card_id,self.id)
         return res["interacted_at"]
 
     def set_value(self,value):
