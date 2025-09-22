@@ -1,36 +1,36 @@
 # card object
-from glx.api.community import CommunityApi
 from glx.card_attribute import CardAttribute
+from glx.api.community import CommunityApi
 import glx.helper as helper
 import glx.scheduler as sc
 
 class Card(object):
-    def __init__(self,collection,card_id):
+    def __init__(self,community_name,collection_id,card_id):
         self.id = card_id
-        self.collection = collection
-        self.api = self.collection.api
+        self.collection_id = collection_id
+        self.api = CardApi(community_name)
 
     def data(self):
-        data = self.api.get_card(self.collection.id,self.id)
+        data = self.api.get_card(self.collection_id,self.id)
         return data
 
     def attributes_raw(self):
-        return self.api.get_card_attributes(self.collection.id,self.id)
+        return self.api.get_card_attributes(self.collection_id,self.id)
     
     def attributes(self):
-        cas = self.api.get_card_attributes(self.collection.id,self.id)
+        cas = self.api.get_card_attributes(self.collection_id,self.id)
         return [CardAttribute(self,c["attribute_id"]) for c in cas]
 
     def attribute(self,attribute_id):
         return CardAttribute(self,attribute_id)
-   
+
     def has_attribute(self, attribute_id):
         if not attribute_id:
             return False
         return attribute_id in [x["attribute_id"] for x in self.attributes_raw()]
 
     def add_attribute(self,attribute_id,attribute_value=None):
-        return self.api.add_attribute_to_card(self.collection.id,self.id,attribute_id,attribute_value)
+        return self.api.add_attribute_to_card(self.collection_id,self.id,attribute_id,attribute_value)
 
     def increase_attribute_value(self,attribute_id,value,expiration=None):
         # if attribute is not there, create it with value 0
@@ -43,7 +43,7 @@ class Card(object):
 
         if expiration:
             # create scheduler event to decrease it later
-            fn = sc.schedule_expiring_value(self.collection.community.name,self.collection.id,self.id,attribute_id,value,expiration)
+            fn = sc.schedule_expiring_value(community_name,self.collection_id,self.id,attribute_id,value,expiration)
 
     def remove_attribute(self,attribute_id):
-        return self.api.remove_attribute_from_card(self.collection.id,self.id,attribute_id)
+        return self.api.remove_attribute_from_card(self.collection_id,self.id,attribute_id)

@@ -8,32 +8,31 @@
 
 from glx.community import Community
 import sys
-import glx.utils as gu
 import os
 import toml
 import glx.helper as helper
 
 def main():
-    communities = gu.communities()
+    communities = helper.communities()
 
     if len(sys.argv) == 1:
         # list communities, mark active if any
-        config = gu.get_config()
+        config = helper.load_local_config()
         
         for community in communities:
-            if community.name == config["community"]:
+            if community == config["community"]:
                 x = " * "
                 y = " < "
             else:
                 x = "   "
                 y = "   "
-            print(x+community.name+y)
+            print(x+community+y)
 
     elif sys.argv[1] == "init":
         community_name = input("community name (no spaces pls): ")
 
         # check if name is taken
-        if community_name in [ c.name for c in gu.communities()]:
+        if community_name in communities:
             print("community name already exists. Exiting.")
             exit(1)
 
@@ -41,7 +40,7 @@ def main():
         api_key = input("api key (blank for read only community): ")
         community_id = input("community id: ")
 
-        config = helper.config()
+        config = helper.load_global_config()
 
         # create community root
         d = os.path.join(config["DATA_ROOT"],"communities",community_name)
@@ -76,7 +75,7 @@ def main():
 
     elif sys.argv[1] == "set":
         # sets active community
-        gu.set_active_community(sys.argv[2])
+        helper.set_active_community(sys.argv[2])
 
 if __name__ == "__main__":
     main()

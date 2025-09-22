@@ -1,9 +1,10 @@
 import glx.__helpers.api_helper as api_helper
-
+import glx.helper as helper
 class CommunityApi(object):
-    def __init__(self,api_key, api_url):
-        self.key = api_key
-        self.url = api_url
+    def __init__(self,community_name):
+        config = helper.load_community_config(community_name)
+        self.key = config["API_KEY"]
+        self.url = config["api_root"]
 
     ##################################################################################
     #

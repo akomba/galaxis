@@ -1,19 +1,23 @@
 # Attribute object
-# this is Attribute, NOT CardAttribute!
-import os
+from glx.api.community import CommunityApi
+import glx.helper as helper
 
 class Attribute(object):
-    def __init__(self, collection,attribute_id):
-        self.collection = collection
+    def __init__(self, community_name, collection_id, attribute_id):
+        self.collection_id = collection_id
         self.id = attribute_id
-        self.api = self.collection.api
-        self.data = self.data()
+        self.api = CommunityApi(community_name)
+        self.data = self.api.get_attribute(self.collection_id,self.id)
         self.name = self.data["name"]
         self.description = self.data["description"]
+        # load config if any
+        self.cnf = helper.load_attrib_config(collection_id,attribute_id)        
 
-    def data(self):
-        data = self.api.get_attribute(self.collection.id,self.id)
-        return data
+    def config(self,c):
+        if c in self.cnf:
+            return self.cnf[c]
+        else:
+            return None
 
     def instances(self,**kwargs):
         # get the attribute instances that have this attribute

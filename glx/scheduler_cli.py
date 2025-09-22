@@ -16,10 +16,9 @@ import os
 import glx.helper as helper
 import glx.scheduler as scheduler
 import argparse
-import glx.utils as gu
 
 def main():
-    conf = helper.config()
+    conf = helper.load_global_config()
     
     parser = argparse.ArgumentParser(
             prog='attribute',
@@ -32,7 +31,7 @@ def main():
 
     args = parser.parse_args()
     
-    config = gu.get_config()
+    config = helper.load_local_config()
     community = config["community"]
 
     if args.list:

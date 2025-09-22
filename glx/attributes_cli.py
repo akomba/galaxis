@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import glx.utils as gu
+import glx.helper as helper
 from glx.community import Community
 import argparse
 import toml
@@ -17,7 +17,7 @@ def main():
     args = parser.parse_args()
 
     # community
-    config = gu.get_config()
+    config = helper.load_local_config()
     community = config["community"]
 
     if not community:
@@ -35,7 +35,7 @@ def main():
         print(att.name)
 
         # find local config if any
-        config = gu.load_attrib_config(att.id)
+        config = helper.load_attrib_config(collection.id,att.id)
 
         if config:
             print("======")
@@ -51,11 +51,11 @@ def main():
 
         if args.set:
             key,value = args.set.split("=")
-            config[key] = value
-            gu.save_attrib_config(att.id,config)
+            config[key] = float(value)
+            helper.save_attrib_config(collection.id,att.id,config)
 
     else:
-        gu.list_options(attributes,config["attribute"])
+        helper.list_options(attributes,config["attribute"])
 
 if __name__ == "__main__":
     main()

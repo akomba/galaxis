@@ -10,7 +10,7 @@ class Community(object):
     def __init__(self, community_name):
         self.name = community_name
         self.config = helper.load_community_config(community_name)
-        self.api = CommunityApi(self.config["API_KEY"],self.config["api_root"])
+        self.api = CommunityApi(community_name)
 
     ###############################################################
     # collections
@@ -21,7 +21,7 @@ class Community(object):
         return self.api.get_collections()
 
     def collection(self,collection_id):
-        return Collection(self,collection_id)
+        return Collection(self.name,collection_id)
     ###############################################################
     # members
     ###############################################################
@@ -36,18 +36,18 @@ class Community(object):
         return members
 
     def member(self,member_id):
-        return Member(self,member_id)
+        return Member(self.name,member_id)
     ###############################################################
 
-    @classmethod
-    def get_community_instance(cls,community_name):
-        gc = helper.config()
-        croot = gc["COMMUNITIES"]
-        # check for config file. Just checking the existence of the file, not its content.
-        config_file = os.path.join(croot,community_name,"config","config.toml")
-        if not os.path.isfile(config_file):
-            #print("Community Creation Error: config file not found:",config_file)
-            return None
+    #@classmethod
+    #def get_community_instance(cls,community_name):
+    #    gc = helper.load_global_config()
+    #    croot = gc["COMMUNITIES"]
+    #    # check for config file. Just checking the existence of the file, not its content.
+    #    config_file = os.path.join(croot,community_name,"config","config.toml")
+    #    if not os.path.isfile(config_file):
+    #        #print("Community Creation Error: config file not found:",config_file)
+    #        return None
 
-        return cls(community_name)
+    #    return cls(community_name)
 

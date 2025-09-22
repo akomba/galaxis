@@ -2,12 +2,13 @@ import json
 import os
 import glx.helper as helper
 import datetime
-import glx
+from glx.card_attribute import CardAttribute
+from glx.api.community import CommunityApi
 import time
 
 def setup(community_name):
     # get folder
-    config = helper.config()
+    config = helper.load_global_config()
     
     #scheduler folder
     sf = os.path.join(config["DATA_ROOT"],"communities",community_name,"scheduler")
@@ -65,14 +66,16 @@ def show_due(community_name):
 
 def process(community_name):
     events = list_due(community_name)
+    api = CommunityApi(community_name)
     for event in events:
         print(event)
         # load event
         e = helper.load_json(event)
        
         # check if attribute exists
-        attribute = glx.card_attribute.CardAttribute.get_instance(e["community_name"],e["collection_id"],e["card_id"],e["attribute_id"])
-        if attribute:
+        attdata = api.get_card_attribute(e["collection_id"],e["card_id"],e["attribute_id"])
+        if attdata:
+            attribute = CardAttribute(e["community_name"],e["collection_id"],e["card_id"],e["attribute_id"])
             # get current value on attribute
             current_value = attribute.value()
             print("current value of attribute:",current_value)

@@ -1,12 +1,13 @@
 # CardAttribute object
 from glx.api.community import CommunityApi
-import glx.helper as helper
+from glx.attribute import Attribute
 
 class CardAttribute(object):
-    def __init__(self, card,attribute_id):
-        self.card = card
+    def __init__(self, community_name, collection_id, card_id, attribute_id):
+        self.card_id = card_id
         self.id = attribute_id
-        self.api = self.card.collection.community.api
+        self.api = CommunityApi(community_name)
+        self.attribute = Attribute(community_name, collection_id, attribute_id)
     
     def value(self):
         res = self.api.get_card_attribute(self.card.collection.id,self.card.id,self.id)
@@ -17,22 +18,22 @@ class CardAttribute(object):
         return res["interacted_at"]
 
     def set_value(self,value):
+        if self.attribute.config("max"):
+            value = self.attribute.config("max") if self.attribute.config("max") < value else value
+
         return self.api.add_attribute_to_card(self.card.collection.id,self.card.id,self.id,value)
 
     def remove(self):
         return self.api.remove_attribute_from_card(self.card.collection.id,self.card.id,self.id)
 
-    @classmethod
-    def get_instance(cls,community_name, collection_id, card_id, attribute_id):
-        import glx
-        c = glx.community.Community(community_name)
-        res = c.api.get_card_attribute(collection_id,card_id,attribute_id)
-        if res:
-            collection = glx.collection.Collection(c,collection_id)
-            card = glx.card.Card(collection,card_id)
-            ca = glx.card_attribute.CardAttribute(card,attribute_id)
-            return ca
-        else:
-            return None
+    #def get_instance(cls,community_name, collection_id, card_id, attribute_id):
+    #    api = CommunityApi(community_name)
+    #    res = api.get_card_attribute(collection_id,card_id,attribute_id)
+    #    if res:
+    #        collection = Collection(c,collection_id)
+    #        card = Card(collection,card_id)
+    #        return cls(CardAttribute(collection_id, card_id, attribute_id))
+    #    else:
+    #        return None
 
 

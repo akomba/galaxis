@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import glx.utils as gu
+import glx.helper as helper
 from glx.community import Community
 import argparse
 
@@ -16,7 +16,7 @@ def main():
     args = parser.parse_args()
 
     # community
-    config = gu.get_config()
+    config = helper.load_local_config()
     if not config["community"]:
         print("run `communities set [communityname]` first")
         exit()

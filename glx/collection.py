@@ -2,14 +2,15 @@
 import os
 from glx.card import Card
 from glx.attribute import Attribute
+from glx.api.community import CommunityApi
 import json
 import glx.helper as helper
 
 class Collection(object):
-    def __init__(self, community, collection_id):
-        self.community = community
+    def __init__(self, community_name, collection_id):
         self.id = collection_id
-        self.api = self.community.api
+        self.community_name = community_name
+        self.api = CommunityApi(community_name)
 
     ###############################################################
     # data
@@ -25,7 +26,7 @@ class Collection(object):
         return attributes
 
     def attribute(self,attribute_id):
-        return Attribute(self,attribute_id)
+        return Attribute(self.community_name,self.id,attribute_id)
 
     #def bulk_assign_attribute(self,collection_id,attribute_id,card_ids):
     #    payload = []
@@ -44,7 +45,7 @@ class Collection(object):
     #    return card_ids
 
     def card(self,card_id):
-        return Card(self,card_id) 
+        return Card(self.community_name,self_id,card_id) 
 
     def cards(self):
         return self.api.get_cards(self.id) 
