@@ -182,12 +182,6 @@ class CommunityApi(object):
         url = self.url+"/collections/"+str(collection_id)+"/cards/"+str(card_id)+"/attributes/"+str(attribute_id)
         res = api_helper.call_api(url)
         # FIXME temp data massage
-        print("=======")
-        print("card_id:",card_id)
-        print("attribute_id:",attribute_id)
-        print(res)
-        print("=======")
-
         if not res:
             return None
 
