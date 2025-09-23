@@ -172,13 +172,14 @@ class CommunityApi(metaclass=Singleton):
         for r in res:
             card_id = int(r["token_id"])
             instance = self.get_card_attribute(collection_id,card_id,attribute_id)
-            # implementing api filter
-            proceed = True
-            for k in query.keys():
-                if not k in instance or query[k] != instance[k]:
-                    proceed = False
-            if proceed:
-                card_attributes.append(instance)
+            if instance:
+                # implementing api filter
+                proceed = True
+                for k in query.keys():
+                    if not k in instance or query[k] != instance[k]:
+                        proceed = False
+                if proceed:
+                    card_attributes.append(instance)
         return card_attributes
 
     ##################################################################################

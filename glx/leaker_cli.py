@@ -38,8 +38,6 @@ def main():
             for catt in catts:
                 if catt["attribute_id"] in leakers.keys():
                     attribute = leakers[catt["attribute_id"]]
-                    print(card.id,"has",attribute.name)
-                    # reduce
                     value = card.attribute(attribute.id).value()
                     reduce_by = attribute.config("leak")/24 
                     new_value = value - reduce_by
