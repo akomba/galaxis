@@ -14,15 +14,18 @@ class Card(object):
         data = self.api.get_card(self.collection_id,self.id)
         return data
 
-    def attributes_raw(self):
-        return self.api.get_card_attributes(self.collection_id,self.id)
+    #def attributes_raw(self):
+    #    return self.api.get_card_attributes(self.collection_id,self.id)
     
-    def attributes(self):
+    def attributes(self,**kwargs):
         cas = self.api.get_card_attributes(self.collection_id,self.id)
-        return [CardAttribute(self,c["attribute_id"]) for c in cas]
+        if kwargs.get("raw",None):
+            return cas
+        else:
+            return [CardAttribute(self,c["attribute_id"]) for c in cas]
 
     def attribute(self,attribute_id):
-        return CardAttribute(self,attribute_id)
+        return CardAttribute(self,self.collection_id,self.id,attribute_id)
 
     def has_attribute(self, attribute_id):
         if not attribute_id:

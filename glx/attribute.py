@@ -13,11 +13,14 @@ class Attribute(object):
         # load config if any
         self.cnf = helper.load_attrib_config(collection_id,attribute_id)        
 
-    def config(self,c):
-        if c in self.cnf:
-            return self.cnf[c]
+    def config(self,c=None):
+        if c:
+            if c in self.cnf:
+                return self.cnf[c]
+            else:
+                return None
         else:
-            return None
+            return self.cnf
 
     def instances(self,**kwargs):
         # get the attribute instances that have this attribute

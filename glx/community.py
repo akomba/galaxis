@@ -15,10 +15,14 @@ class Community(object):
     ###############################################################
     # collections
     ###############################################################
-    def collections(self):
+    def collections(self,**kwargs):
         # id
         # name
-        return self.api.get_collections()
+        collections = self.api.get_collections()
+        if kwargs.get("raw",None):
+            return collections
+        else:
+            return[Collection(self.name,c["id"]) for c in collections]
 
     def collection(self,collection_id):
         return Collection(self.name,collection_id)

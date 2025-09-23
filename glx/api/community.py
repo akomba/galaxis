@@ -1,6 +1,14 @@
 import glx.__helpers.api_helper as api_helper
 import glx.helper as helper
-class CommunityApi(object):
+
+class Singleton(type):
+    _instances = {}
+    def __call__(cls, *args, **kwargs):
+        if cls not in cls._instances:
+            cls._instances[cls] = super(Singleton, cls).__call__(*args, **kwargs)
+        return cls._instances[cls]
+
+class CommunityApi(metaclass=Singleton):
     def __init__(self,community_name):
         config = helper.load_community_config(community_name)
         self.key = config["API_KEY"]
@@ -178,13 +186,7 @@ class CommunityApi(object):
     # card attributes
     #
     ##################################################################################
-    def get_card_attribute(self,collection_id,card_id,attribute_id):
-        url = self.url+"/collections/"+str(collection_id)+"/cards/"+str(card_id)+"/attributes/"+str(attribute_id)
-        res = api_helper.call_api(url)
-        # FIXME temp data massage
-        if not res:
-            return None
-
+    def ca_massager(self,res,card_id):
         if res["is_interactive"]:
             if res["interaction"]["can_interact"]:
                 interacted_at = False
@@ -203,20 +205,27 @@ class CommunityApi(object):
 
         ca = {}
         ca["card_id"] = card_id
-        ca["attribute_id"] = attribute_id
+        ca["attribute_id"] = int(res["id"])
         ca["interacted_at"]   = interacted_at
         ca["interacted_result"] = interacted_value
         ca["value"] = v
         return ca
+
+    def get_card_attribute(self,collection_id,card_id,attribute_id):
+        url = self.url+"/collections/"+str(collection_id)+"/cards/"+str(card_id)+"/attributes/"+str(attribute_id)
+        res = api_helper.call_api(url)
+        # FIXME temp data massage
+        if not res:
+            return None
+        return self.ca_massager(res,card_id)
 
     def get_card_attributes(self,collection_id,card_id):
         url = self.url+"/collections/"+str(collection_id)+"/cards/"+str(card_id)+"/attributes"
         res = api_helper.call_api(url)
         # FIXME temp data massage
         card_attributes = []
-        for ca in [int(x["id"]) for x in res]:
-            card_attributes.append(self.get_card_attribute(collection_id,card_id,ca))
-
+        for ca in res:
+            card_attributes.append(self.ca_massager(ca,card_id))
         return card_attributes
     ##################################################################################
     def get_attribute_interaction(self,collection_id,card_id,attribute_id):

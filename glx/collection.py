@@ -21,12 +21,18 @@ class Collection(object):
     ###############################################################
     # attributes
     ###############################################################
-    def attributes(self):
+    def attributes(self,**kwargs):
         attributes = self.api.get_attributes(self.id)
-        return attributes
+        if kwargs.get("raw",None):
+            return attributes
+        else:
+            return [Attribute(self.community_name,self.id,att["id"]) for att in attributes]
 
-    def attribute(self,attribute_id):
-        return Attribute(self.community_name,self.id,attribute_id)
+    def attribute(self,attribute_id,**kwargs):
+        if kwargs.get("raw",None):
+            return self.api.get_attribute(self.id,attribute_id)
+        else:
+            return Attribute(self.community_name,self.id,attribute_id)
 
     #def bulk_assign_attribute(self,collection_id,attribute_id,card_ids):
     #    payload = []
@@ -44,8 +50,15 @@ class Collection(object):
     #    card_ids = [m["token_id"] for m in self.api.get_cards_with_attribute(attribute_id)]
     #    return card_ids
 
-    def card(self,card_id):
-        return Card(self.community_name,self.id,card_id) 
+    def card(self,card_id,**kwargs):
+        if kwargs.get("raw",None):
+            return self.api.get_card(self.id,card_id)
+        else:
+            return Card(self.community_name,self.id,card_id) 
 
-    def cards(self):
-        return self.api.get_cards(self.id) 
+    def cards(self,**kwargs):
+        cards = self.api.get_cards(self.id) 
+        if kwargs.get("raw",None):
+            return cards
+        else:
+            return [Card(self.community_name,self.id,c["id"]) for c in cards]

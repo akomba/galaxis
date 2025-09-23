@@ -27,7 +27,7 @@ def main():
     c = Community(community)
     collection = c.collection(config["collection"])
 
-    attributes = collection.attributes()
+    attributes = collection.attributes(raw=True)
 
 
     if args.id:
