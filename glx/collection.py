@@ -45,7 +45,7 @@ class Collection(object):
     #    return card_ids
 
     def card(self,card_id):
-        return Card(self.community_name,self_id,card_id) 
+        return Card(self.community_name,self.id,card_id) 
 
     def cards(self):
         return self.api.get_cards(self.id) 

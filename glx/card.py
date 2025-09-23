@@ -8,7 +8,7 @@ class Card(object):
     def __init__(self,community_name,collection_id,card_id):
         self.id = card_id
         self.collection_id = collection_id
-        self.api = CardApi(community_name)
+        self.api = CommunityApi(community_name)
 
     def data(self):
         data = self.api.get_card(self.collection_id,self.id)

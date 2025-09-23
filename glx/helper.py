@@ -85,6 +85,9 @@ def load_local_config():
         save_local_config(config)
     return config
 
+def get_active_community():
+    c = load_local_config()
+    return c["community"]
 ##############################################################
 #
 # attributes

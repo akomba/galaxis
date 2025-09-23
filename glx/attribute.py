@@ -23,7 +23,7 @@ class Attribute(object):
         # get the attribute instances that have this attribute
         # FIXME later use gt
         query = kwargs.get('query', None)
-        data = self.api.get_attribute_instances(self.collection.id,self.id,query=query)
+        data = self.api.get_attribute_instances(self.collection_id,self.id,query=query)
         if data:
             return data
         else:
