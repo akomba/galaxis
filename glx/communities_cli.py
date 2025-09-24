@@ -12,6 +12,8 @@ import os
 import toml
 import glx.helper as helper
 
+APPNAME = "glx"
+
 def main():
     communities = helper.communities()
 
@@ -75,7 +77,7 @@ def main():
 
     elif sys.argv[1] == "set":
         # sets active community
-        helper.set_active_community(sys.argv[2])
+        helper.set_local_config("community",sys.argv[2])
 
 if __name__ == "__main__":
     main()

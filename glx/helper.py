@@ -1,6 +1,8 @@
 import os
 import json
 import toml
+        
+GLX_DEFAULT_CONFIG = {"community":False,"collection":1}
 ##############################################################
 #
 # load and save files
@@ -51,19 +53,58 @@ def load_community_config(community_name):
 
 ##############################################################
 #
-# local configs
+# local app configs
 #
 ##############################################################
-def set_active_community(community_name):
-    if not community_name in [c for c in communities()]:
-        print("unknown community, exiting.")
-        exit(1)
+def save_app_config(appname,config):
+    fname = "."+appname+".toml"
+    with open(fname,"w") as f:
+        toml.dump(config,f)
+    return fname
 
-    config = load_local_config()
-    config["community"] = community_name
-    if not config["collection"]:
-        config["collection"] = 1
-    save_local_config(config)
+def set_app_config(appname,k,v):
+    config = load_app_config(appname)
+    config[k] = v
+    save_app_config(appname,config)
+    return config
+
+def load_app_config(appname):
+    fname = "."+appname+".toml"
+    if os.path.isfile(fname):
+        with open(fname) as f:
+            config = toml.load(f)
+        return config
+    else:
+        return None
+
+def create_app_config(appname,config):
+    # check if there is a glx config
+    # if so, use that as the default
+    print(">>> config:",config)
+    glx_config = load_app_config("glx")
+    if not glx_config:
+        glx_config = GLX_DEFAULT_CONFIG
+    # merge glx config wit app config
+    config = config | glx_config
+    print(">>> config:",config)
+    fname = save_app_config(appname,config)
+    return fname
+
+##############################################################
+#
+# local glx configs
+#
+##############################################################
+#def set_active_community(community_name):
+#    if not community_name in [c for c in communities()]:
+#        print("unknown community, exiting.")
+#        exit(1)
+#
+#    config = load_local_config()
+#    config["community"] = community_name
+#    if not config["collection"]:
+#        config["collection"] = 1
+#    save_local_config(config)
 
 def save_local_config(config):
     with open(".config.toml","w") as f:
@@ -81,7 +122,7 @@ def load_local_config():
             config = toml.load(f)
         return config
     else:
-        config = {"community":False,"collection":False,"attribute":False,"card":False}
+        config = {"community":False,"collection":1,"attribute":False,"card":False}
         save_local_config(config)
     return config
 

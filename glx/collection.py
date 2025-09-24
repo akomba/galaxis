@@ -34,14 +34,16 @@ class Collection(object):
         else:
             return Attribute(self.community_name,self.id,attribute_id)
 
-    #def bulk_assign_attribute(self,collection_id,attribute_id,card_ids):
-    #    payload = []
-    #    for c in card_ids:
-    #        payload.append({"token_id":c})
-    #    self.api.bulk_assign_attribute(collection_id,attribute_id,payload)
+    def add_attribute(self,attribute_id):
+        # add attribute to all cards in this collection
+        for card in self.cards():
+            card.add_attribute(attribute_id)
 
-    #def bulk_remove_attribute(self,collection_id,attribute_id,card_ids):
-    #    self.api.bulk_remove_attribute(collection_id,attribute_id,card_ids)
+
+    def remove_attribute(self,attribute_id):
+        # remove attribute from all cards
+        for card in self.cards():
+            card.remove_attribute(attribute_id)
 
     ###############################################################
     # cards

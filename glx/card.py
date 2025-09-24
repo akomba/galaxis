@@ -9,10 +9,15 @@ class Card(object):
         self.id = card_id
         self.collection_id = collection_id
         self.api = CommunityApi(community_name)
+        self.dt = None
 
-    def data(self):
-        data = self.api.get_card(self.collection_id,self.id)
-        return data
+    def data(self,d=None):
+        if not self.dt:
+            self.dt = self.api.get_card(self.collection_id,self.id)
+        if d:
+            return self.dt[d]
+        else:
+            return self.dt
 
     #def attributes_raw(self):
     #    return self.api.get_card_attributes(self.collection_id,self.id)
@@ -30,19 +35,17 @@ class Card(object):
     def has_attribute(self, attribute_id):
         if not attribute_id:
             return False
-        return attribute_id in [x["attribute_id"] for x in self.attributes_raw()]
+        return attribute_id in [x["attribute_id"] for x in self.attributes(raw=True)]
 
     def add_attribute(self,attribute_id,attribute_value=None):
         return self.api.add_attribute_to_card(self.collection_id,self.id,attribute_id,attribute_value)
 
     def increase_attribute_value(self,attribute_id,value,expiration=None):
-        # if attribute is not there, create it with value 0
-        if not self.has_attribute(attribute_id):
-            self.add_attribute(attribute_id,value)
-        else:
-            # increase attribute's value with value
-            current_value = self.attribute(attribute_id).value()
-            self.add_attribute(attribute_id,(current_value+value))
+        # if attribute is already there, we take its value
+        if self.has_attribute(attribute_id):
+            value = self.attribute(attribute_id).value() + value
+        
+        self.add_attribute(attribute_id,value)
 
         if expiration:
             # create scheduler event to decrease it later
