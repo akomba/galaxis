@@ -2,7 +2,7 @@ import os
 import json
 import toml
         
-GLX_DEFAULT_CONFIG = {"community":False,"collection":1}
+GLX_DEFAULT_CONFIG = {"community_name":False,"collection_id":1}
 ##############################################################
 #
 # load and save files
@@ -56,8 +56,11 @@ def load_community_config(community_name):
 # local app configs
 #
 ##############################################################
+def cfg_filename(appname):
+    return "."+appname+".toml"
+
 def save_app_config(appname,config):
-    fname = "."+appname+".toml"
+    fname = cfg_filename(appname)
     with open(fname,"w") as f:
         toml.dump(config,f)
     return fname
@@ -69,26 +72,43 @@ def set_app_config(appname,k,v):
     return config
 
 def load_app_config(appname):
-    fname = "."+appname+".toml"
+    fname = cfg_filename(appname)
     if os.path.isfile(fname):
         with open(fname) as f:
             config = toml.load(f)
         return config
     else:
-        return None
+        return {}
 
 def create_app_config(appname,config):
     # check if there is a glx config
     # if so, use that as the default
-    print(">>> config:",config)
     glx_config = load_app_config("glx")
     if not glx_config:
         glx_config = GLX_DEFAULT_CONFIG
     # merge glx config wit app config
     config = config | glx_config
-    print(">>> config:",config)
     fname = save_app_config(appname,config)
     return fname
+
+def load_or_create_app_config(appname,config_template):
+    config = load_app_config(appname)
+    if not config:
+        fn = create_app_config(appname,config_template)
+        print("Config file created:",fn)
+        print("Please fill it out carefully and run this app again")
+        exit()
+    if not config["community_name"]:
+        print("Community name is not set.")
+        print("Check your config file:",cfg_filename(appname))
+        exit() 
+    
+    print("config -------")
+    for k,v in config.items():
+        print(k,":",v)
+    print("--------------")
+    
+    return config
 
 ##############################################################
 #
@@ -110,11 +130,11 @@ def save_local_config(config):
     with open(".config.toml","w") as f:
         toml.dump(config,f)
 
-def set_local_config(k,v):
-    config = load_local_config()
-    config[k] = v
-    save_local_config(config)
-    return config
+#def set_local_config(k,v):
+#    config = load_local_config()
+#    config[k] = v
+#    save_local_config(config)
+#    return config
 
 def load_local_config():
     if os.path.isfile(".config.toml"):

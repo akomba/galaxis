@@ -17,12 +17,13 @@ APPNAME = "glx"
 def main():
     communities = helper.communities()
 
+    config = helper.load_or_create_app_config(APPNAME,helper.GLX_DEFAULT_CONFIG)
+    
     if len(sys.argv) == 1:
         # list communities, mark active if any
-        config = helper.load_local_config()
         
         for community in communities:
-            if community == config["community"]:
+            if community == config["community_name"]:
                 x = " * "
                 y = " < "
             else:
@@ -41,8 +42,6 @@ def main():
         #if not, create folder structure and ask for api key and community id
         api_key = input("api key (blank for read only community): ")
         community_id = input("community id: ")
-
-        config = helper.load_global_config()
 
         # create community root
         d = os.path.join(config["DATA_ROOT"],"communities",community_name)
@@ -77,7 +76,7 @@ def main():
 
     elif sys.argv[1] == "set":
         # sets active community
-        helper.set_local_config("community",sys.argv[2])
+        helper.set_app_config(APPNAME,"community_name",sys.argv[2])
 
 if __name__ == "__main__":
     main()

@@ -11,6 +11,8 @@ class Singleton(type):
 class CommunityApi(metaclass=Singleton):
     def __init__(self,community_name):
         config = helper.load_community_config(community_name)
+        if not config:
+            print("could not load config for community >"+str(community_name)+"<. Exiting.")
         self.key = config["API_KEY"]
         self.url = config["api_root"]
 

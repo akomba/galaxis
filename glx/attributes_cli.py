@@ -1,9 +1,11 @@
 #!/usr/bin/env python
 
 import glx.helper as helper
-from glx.community import Community
+from glx.collection import Collection
 import argparse
 import toml
+
+APPNAME = "glx"
 
 def main():
     parser = argparse.ArgumentParser(
@@ -17,16 +19,13 @@ def main():
     args = parser.parse_args()
 
     # community
-    config = helper.load_local_config()
-    community = config["community"]
+    config = helper.load_or_create_app_config(APPNAME,helper.GLX_DEFAULT_CONFIG)
 
-    if not community:
+    if not config["community_name"]:
         print("no community specified, exiting.")
         exit(1)
 
-    c = Community(community)
-    collection = c.collection(config["collection"])
-
+    collection = Collection(config["community_name"],config["collection_id"])
     attributes = collection.attributes(raw=True)
 
 
@@ -42,7 +41,6 @@ def main():
             for k,v in config.items():
                 print(k,v)
 
-
         if args.list:
             print("======")
             print("cards:")
@@ -55,7 +53,7 @@ def main():
             helper.save_attrib_config(collection.id,att.id,config)
 
     else:
-        helper.list_options(attributes,config["attribute"])
+        helper.list_options(attributes)
 
 if __name__ == "__main__":
     main()

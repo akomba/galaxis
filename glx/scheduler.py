@@ -68,7 +68,6 @@ def process(community_name):
     events = list_due(community_name)
     api = CommunityApi(community_name)
     for event in events:
-        print(event)
         # load event
         e = helper.load_json(event)
        
@@ -78,7 +77,6 @@ def process(community_name):
             attribute = CardAttribute(e["community_name"],e["collection_id"],e["card_id"],e["attribute_id"])
             # get current value on attribute
             current_value = attribute.value()
-            print("current value of attribute:",current_value)
 
             # setting new value
             new_value = current_value - e["value"]
@@ -98,6 +96,3 @@ def process(community_name):
         t[-1] = "x"+t[-1]
         fn = "/".join(t)
         os.rename(event,fn)
-        print("renamed from:",event)
-        print("renamed to  :",fn)
-        print("===============================\n")

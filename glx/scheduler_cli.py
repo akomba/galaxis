@@ -1,12 +1,8 @@
-#!/usr/bin/env python
-
 # runs the scheduler loop
 # adds items to be scheduled
 # items: 
 #   expiring values
 #   expiring badges
-
-
 # load scheduler dir (communities/scheduler)
 # loop through items
 # execute the ones that expired
@@ -17,9 +13,9 @@ import glx.helper as helper
 import glx.scheduler as scheduler
 import argparse
 
+APPNAME = "glx"
+
 def main():
-    conf = helper.load_global_config()
-    
     parser = argparse.ArgumentParser(
             prog='attribute',
             description='shows / manages members of a galaxis community',
@@ -31,22 +27,22 @@ def main():
 
     args = parser.parse_args()
     
-    config = helper.load_local_config()
-    community = config["community"]
+    config = helper.load_or_create_app_config(APPNAME,helper.GLX_DEFAULT_CONFIG)
+    community_name = config["community_name"]
 
     if args.list:
-        events = scheduler.list_due(community)
+        events = scheduler.list_due(community_name)
         for event in events:
             print(event)
-
-    if args.process:
-        print("Active:",len(scheduler.list_active(community)))
-        scheduler.process(community)
+        exit()
 
     if args.due:
         print("Due:")
-        scheduler.show_due(community)
+        scheduler.show_due(community_name)
+        exit()
 
+    print("Active:",len(scheduler.list_active(community_name)))
+    scheduler.process(community_name)
 
 if __name__ == "__main__":
     main()

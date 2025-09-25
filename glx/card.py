@@ -7,6 +7,7 @@ import glx.scheduler as sc
 class Card(object):
     def __init__(self,community_name,collection_id,card_id):
         self.id = card_id
+        self.community_name = community_name
         self.collection_id = collection_id
         self.api = CommunityApi(community_name)
         self.dt = None
@@ -27,10 +28,10 @@ class Card(object):
         if kwargs.get("raw",None):
             return cas
         else:
-            return [CardAttribute(self,c["attribute_id"]) for c in cas]
+            return [CardAttribute(self.community_name,self.collection_id,self.id,c["attribute_id"]) for c in cas]
 
     def attribute(self,attribute_id):
-        return CardAttribute(self,self.collection_id,self.id,attribute_id)
+        return CardAttribute(self.community_name, self.collection_id, self.id, attribute_id)
 
     def has_attribute(self, attribute_id):
         if not attribute_id:
@@ -49,7 +50,7 @@ class Card(object):
 
         if expiration:
             # create scheduler event to decrease it later
-            fn = sc.schedule_expiring_value(community_name,self.collection_id,self.id,attribute_id,value,expiration)
+            fn = sc.schedule_expiring_value(self.community_name,self.collection_id,self.id,attribute_id,value,expiration)
 
     def remove_attribute(self,attribute_id):
         return self.api.remove_attribute_from_card(self.collection_id,self.id,attribute_id)

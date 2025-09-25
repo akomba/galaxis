@@ -5,7 +5,7 @@ import sys
 from textwrap import dedent
 
 
-__version__ = "0.3.6"
+__version__ = "0.3.7"
 
 
 def main():
