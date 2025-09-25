@@ -160,8 +160,6 @@ def load_attrib_config(community_name,collection_id,attribute_id):
 
     config_file = os.path.join(gc["COMMUNITIES"],community_name,"config",str(collection_id)+"_"+str(attribute_id)+".toml")
 
-    print(config_file)
-
     if os.path.isfile(config_file):
         with open(config_file) as f:
             config = toml.load(f)
