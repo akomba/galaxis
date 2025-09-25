@@ -34,7 +34,7 @@ def main():
         print(att.name)
 
         # find local config if any
-        config = helper.load_attrib_config(collection.id,att.id)
+        config = helper.load_attrib_config(config["community_name"],collection.id,att.id)
 
         if config:
             print("======")
