@@ -11,7 +11,7 @@ class Attribute(object):
         self.name = self.data["name"]
         self.description = self.data["description"]
         # load config if any
-        self.cnf = helper.load_attrib_config(collection_id,attribute_id)        
+        self.cnf = helper.load_attrib_config(community_name,collection_id,attribute_id)        
 
     def config(self,c=None):
         if c:

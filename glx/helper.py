@@ -154,16 +154,13 @@ def get_active_community():
 # attributes
 #
 ##############################################################
-def load_attrib_config(collection_id,attribute_id):
+def load_attrib_config(community_name,collection_id,attribute_id):
     # get folder
     gc = load_global_config()
 
-    # get community name from local config
-    lc = load_local_config()
-    if not lc["community"]:
-        return {}
+    config_file = os.path.join(gc["COMMUNITIES"],community_name,"config",str(collection_id)+"_"+str(attribute_id)+".toml")
 
-    config_file = os.path.join(gc["COMMUNITIES"],lc["community"],"config",str(collection_id)+"_"+str(attribute_id)+".toml")
+    print(config_file)
 
     if os.path.isfile(config_file):
         with open(config_file) as f:
@@ -172,16 +169,11 @@ def load_attrib_config(collection_id,attribute_id):
     else:
         return {}
 
-def save_attrib_config(collection_id,attribute_id,config):
+def save_attrib_config(community_name,collection_id,attribute_id,config):
     # get folder
     gc = load_global_config()
 
-    # get community name from local config
-    lc = load_local_config()
-    if not lc["community"]:
-        return None
-
-    config_file = os.path.join(gc["COMMUNITIES"],lc["community"],"config",str(collection_id)+"_"+str(attribute_id)+".toml")
+    config_file = os.path.join(gc["COMMUNITIES"],community_name,"config",str(collection_id)+"_"+str(attribute_id)+".toml")
     with open(config_file,"w") as f:
         toml.dump(config,f)
 

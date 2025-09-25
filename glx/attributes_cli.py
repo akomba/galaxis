@@ -50,7 +50,7 @@ def main():
         if args.set:
             key,value = args.set.split("=")
             config[key] = float(value)
-            helper.save_attrib_config(collection.id,att.id,config)
+            helper.save_attrib_config(config["community_name"],collection.id,att.id,config)
 
     else:
         helper.list_options(attributes)
