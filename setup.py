@@ -33,7 +33,7 @@ def get_version():
 
 
 setup(
-    name="glx",
+    name="galaxis",
     version=get_version(),
     author="Andras Kristof",
     author_email="akristof@galaxis.xyz",
