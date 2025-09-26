@@ -18,6 +18,35 @@ class CommunityApi(metaclass=Singleton):
 
     ##################################################################################
     #
+    # articles
+    #
+    ##################################################################################
+    def get_articles(self):
+        url = self.url+"/news/admin/all"
+        res = api_helper.call_api(url,self.key)
+        return res["data"]
+
+    def update_article(self,article_id,param,value):
+        url=self.url+"/news/"+str(article_id)
+        data = {param:value}
+        response = api_helper.put(url,self.key,data)
+        return response
+
+    def get_article(self,article_id):
+        url = self.url+"/news/"+str(article_id)
+        res = api_helper.call_api(url)
+        return res["data"]
+
+    ##################################################################################
+    #
+    # comments
+    #
+    ##################################################################################
+    #get_article_comments(self,article_id):
+
+
+    ##################################################################################
+    #
     # collections
     #
     ##################################################################################

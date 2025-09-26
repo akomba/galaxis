@@ -22,7 +22,6 @@ class CardAttribute(object):
     def set_value(self,value):
         if self.attribute.config("max"):
             value = self.attribute.config("max") if self.attribute.config("max") < value else value
-
         return self.api.add_attribute_to_card(self.collection_id,self.card_id,self.id,value)
 
     def remove(self):

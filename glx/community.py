@@ -3,6 +3,7 @@ import os
 from glx.api.community import CommunityApi
 from glx.member import Member
 from glx.collection import Collection
+from glx.article import Article
 import json
 import glx.helper as helper
 
@@ -41,7 +42,26 @@ class Community(object):
 
     def member(self,member_id):
         return Member(self.name,member_id)
-    ###############################################################
+
+    def articles(self, **kwargs):
+        raw = kwargs.get("raw",None)
+        article_id = kwargs.get("id",None)
+        
+        if article_id:
+            article = self.api.get_article(article_id)
+            if article:
+                if raw:
+                    return article
+                else:
+                    return Article(self.name,article["id"])
+            else:
+                return None
+        else:
+            articles = self.api.get_articles()
+            if raw:
+                return articles
+            else:
+                return [Article(self.name,a["id"]) for a in articles]
 
     #@classmethod
     #def get_community_instance(cls,community_name):

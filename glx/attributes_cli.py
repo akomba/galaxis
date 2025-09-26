@@ -32,13 +32,11 @@ def main():
     if args.id:
         att = collection.attribute(args.id)
         print(att.name)
-
-        # find local config if any
-        config = helper.load_attrib_config(config["community_name"],collection.id,att.id)
+        attcfg = att.config()
 
         if config:
             print("======")
-            for k,v in config.items():
+            for k,v in attcfg.items():
                 print(k,v)
 
         if args.list:
@@ -49,8 +47,9 @@ def main():
 
         if args.set:
             key,value = args.set.split("=")
-            config[key] = float(value)
-            helper.save_attrib_config(config["community_name"],collection.id,att.id,config)
+            attcfg[key] = float(value)
+            helper.save_attrib_config(config["community_name"],collection.id,att.id,attcfg)
+            print(attcfg)
 
     else:
         helper.list_options(attributes)

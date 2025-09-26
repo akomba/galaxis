@@ -39,7 +39,8 @@ class Card(object):
         return attribute_id in [x["attribute_id"] for x in self.attributes(raw=True)]
 
     def add_attribute(self,attribute_id,attribute_value=None):
-        return self.api.add_attribute_to_card(self.collection_id,self.id,attribute_id,attribute_value)
+        ca = CardAttribute(self.community_name,self.collection_id,self.id,attribute_id)
+        return ca.set_value(attribute_value)
 
     def increase_attribute_value(self,attribute_id,value,expiration=None):
         # if attribute is already there, we take its value
