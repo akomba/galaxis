@@ -20,12 +20,12 @@ def main():
         leakers = {}
         for att in collection.attributes():
             if "leak" in att.config():
-                print("leaker:",att.name,att.config("leak"))
+                print("LK:",att.name,att.config("leak"))
                 leakers[att.id] = att
-
         # get all members
         cards = collection.cards()
         for card in cards:
+            print("LK: card:", card.id)
             catts = card.attributes(raw=True)
             for catt in catts:
                 if catt["attribute_id"] in leakers.keys():
@@ -34,11 +34,11 @@ def main():
                     reduce_by = attribute.config("leak")/24 
                     new_value = value - reduce_by
                     if new_value <= 0:
-                        print(card.id,"remove attribute",attribute.name)
+                        print("LK:",card.id,"DEL",attribute.name)
                         card.remove_attribute(attribute.id)
                     else:
-                        print(card.id,"new value for",attribute.name,":",new_value)
                         card.add_attribute(attribute.id,new_value)
+                        print("LK:",card.id,"VAL",attribute.name,":",card.attribute(attribute.id).value())
 
 if __name__ == "__main__":
     main()
