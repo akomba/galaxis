@@ -35,7 +35,10 @@ def load_community_config(community_name):
     croot = gc["COMMUNITIES"]
     config_folder = os.path.join(croot,community_name,"config")
     data_folder = os.path.join(croot,community_name,"data")
-        
+    log_folder = os.path.join(croot,community_name,"log")
+    os.makedirs(config_folder,exist_ok=True) 
+    os.makedirs(data_folder,exist_ok=True) 
+    os.makedirs(log_folder,exist_ok=True) 
     # load communtity specific config
     config_file = os.path.join(config_folder,"config.toml")
     if not os.path.isfile(config_file):
@@ -47,6 +50,7 @@ def load_community_config(community_name):
 
     cfg["config_folder"] = config_folder
     cfg["data_folder"] = data_folder
+    cfg["log_folder"] = log_folder
     cfg["api_root"] = gc["API_ROOT"].replace("%COMMUNITY_ID%",cfg["COMMUNITY_ID"])
 
     return cfg

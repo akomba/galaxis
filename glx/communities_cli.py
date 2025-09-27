@@ -11,11 +11,14 @@ import sys
 import os
 import toml
 import glx.helper as helper
+from glx.logger import Logger
 
 APPNAME = "glx"
 
 def main():
     communities = helper.communities()
+    lg = Logger()
+    lg.logger.info("test log")
 
     config = helper.load_or_create_app_config(APPNAME,helper.GLX_DEFAULT_CONFIG)
     

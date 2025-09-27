@@ -26,15 +26,3 @@ class CardAttribute(object):
 
     def remove(self):
         return self.api.remove_attribute_from_card(self.collection_id,self.card_id,self.id)
-
-    #def get_instance(cls,community_name, collection_id, card_id, attribute_id):
-    #    api = CommunityApi(community_name)
-    #    res = api.get_card_attribute(collection_id,card_id,attribute_id)
-    #    if res:
-    #        collection = Collection(c,collection_id)
-    #        card = Card(collection,card_id)
-    #        return cls(CardAttribute(collection_id, card_id, attribute_id))
-    #    else:
-    #        return None
-
-
