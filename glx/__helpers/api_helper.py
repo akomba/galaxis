@@ -4,7 +4,7 @@ import json
 TIMEOUT = 10
 
 def call_api(url,api_key=None):
-    url = url+"?limit=1000&page=1"
+    url = url+"?limit=20000&page=1"
     assets = _call_api(url,api_key)
     if assets is None:
         return None
