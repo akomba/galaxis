@@ -6,7 +6,9 @@ from glx.logger import Logger
 import os
 import toml
 from glx.community import Community
+from glx.collection import Collection
 import importlib
+import argparse
 
 __version__ = "0.4"
 
@@ -14,6 +16,11 @@ def main():
     if "--version" in sys.argv[1:]:
         print(__version__)
         exit(0)
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-c", "--community")
+    parser.add_argument("-l", "--list")
+    args = parser.parse_args()
 
     communities = helper.communities()
     config = helper.load_global_config()
@@ -63,6 +70,12 @@ def main():
         for community in communities:
             print(community)
         exit(0)
+
+    elif args.community and args.list:
+        if args.list == "attributes":
+            collection = Collection(args.community,1)
+            helper.list_options(collection.attributes(raw=True))
+        exit()
 
     # try to get apps
     # don't worry how the apps get there
