@@ -17,10 +17,10 @@ APPNAME = "glx"
 
 def main():
     communities = helper.communities()
-    lg = Logger()
-    lg.logger.info("test log")
 
-    config = helper.load_or_create_app_config(APPNAME,helper.GLX_DEFAULT_CONFIG)
+    config = helper.load_or_create_local_config()
+    lg = Logger()
+    lg.init(config["community_name"])
     
     if len(sys.argv) == 1:
         # list communities, mark active if any
@@ -79,7 +79,8 @@ def main():
 
     elif sys.argv[1] == "set":
         # sets active community
-        helper.set_app_config(APPNAME,"community_name",sys.argv[2])
+        helper.set_local_config("community_name",sys.argv[2])
+        lg.logger.info(APPNAME+": communities set active community to "+sys.argv[2])
 
 if __name__ == "__main__":
     main()

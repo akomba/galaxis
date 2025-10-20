@@ -19,7 +19,7 @@ def main():
     args = parser.parse_args()
 
     # community
-    config = helper.load_or_create_app_config(APPNAME,helper.GLX_DEFAULT_CONFIG)
+    config = helper.load_or_create_local_config()
 
     if not config["community_name"]:
         print("no community specified, exiting.")

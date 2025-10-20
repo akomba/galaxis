@@ -1,8 +1,10 @@
 import os
 import json
 import toml
-        
-GLX_DEFAULT_CONFIG = {"community_name":False,"collection_id":1}
+import datetime
+
+GLX_DEFAULT_CONFIG = {"iteration":0}
+GLX_CONFIG_NAME = ".config.toml"
 ##############################################################
 #
 # load and save files
@@ -23,7 +25,8 @@ def load_json(fname):
 ##############################################################
 def load_global_config():
     # load global config
-    gc = { "API_ROOT":    "https://app.galaxis-community.com/%COMMUNITY_ID%/communityserver/api" }
+    gc = { "SERVER_URL":    "https://app.galaxis-community.com/%COMMUNITY_ID%/communityserver" }
+    #gc = { "API_ROOT":    "https://app.galaxis-community.com/%COMMUNITY_ID%/communityserver/api" }
     gc["DATA_ROOT"] = os.path.join(os.path.expanduser("~user"),".local/share/glx/data")
     gc["COMMUNITIES"] = os.path.join(gc["DATA_ROOT"],"communities")
     os.makedirs(gc["DATA_ROOT"],exist_ok=True)
@@ -36,6 +39,7 @@ def load_community_config(community_name):
     config_folder = os.path.join(croot,community_name,"config")
     data_folder = os.path.join(croot,community_name,"data")
     log_folder = os.path.join(croot,community_name,"log")
+    apps_folder = os.path.join(croot,community_name,"apps")
     os.makedirs(config_folder,exist_ok=True) 
     os.makedirs(data_folder,exist_ok=True) 
     os.makedirs(log_folder,exist_ok=True) 
@@ -51,66 +55,98 @@ def load_community_config(community_name):
     cfg["config_folder"] = config_folder
     cfg["data_folder"] = data_folder
     cfg["log_folder"] = log_folder
-    cfg["api_root"] = gc["API_ROOT"].replace("%COMMUNITY_ID%",cfg["COMMUNITY_ID"])
+    cfg["apps_folder"] = apps_folder
+    cfg["server_url"] = gc["SERVER_URL"].replace("%COMMUNITY_ID%",cfg["COMMUNITY_ID"])
+    cfg["api_root"] = cfg["server_url"]+"/api"
+    cfg["socketio_url"] = cfg["server_url"]
 
     return cfg
+
+##############################################################
+#
+# local app data
+#
+##############################################################
+def save_app_data(community_name,app_name,title,data):
+    cc = load_community_config(community_name)
+    data_folder = os.path.join(cc["apps_folder"],app_name,"data")
+    os.makedirs(data_folder,exist_ok=True)
+    fn= os.path.join(data_folder,title+".json")
+    #print("save app data:",fn)
+    save_as_json(fn,data)
+
+def load_app_data(community_name,app_name,title):
+    cc = load_community_config(community_name)
+    data_folder = os.path.join(cc["apps_folder"],app_name,"data")
+    fn= os.path.join(data_folder,title+".json")
+    if os.path.isfile(fn):
+        return load_json(fn)
+    else:
+        return None
 
 ##############################################################
 #
 # local app configs
 #
 ##############################################################
-def cfg_filename(appname):
-    return "."+appname+".toml"
+def cfg_filename(community_name, app_name):
+    # find proper config path
+    cc = load_community_config(community_name)
+    appconf_folder =  os.path.join(cc["apps_folder"],app_name)
+    os.makedirs(appconf_folder,exist_ok=True) 
+    return os.path.join(appconf_folder,"."+app_name+".toml")
 
-def save_app_config(appname,config):
-    fname = cfg_filename(appname)
+def save_app_config(community_name, app_name,config):
+    fname = cfg_filename(community_name,app_name)
     with open(fname,"w") as f:
         toml.dump(config,f)
     return fname
 
-def set_app_config(appname,k,v):
-    config = load_app_config(appname)
+def set_app_config(community_name, app_name,k,v):
+    config = load_app_config(app_name)
     config[k] = v
-    save_app_config(appname,config)
+    save_app_config(community_name, app_name,config)
     return config
 
-def load_app_config(appname):
-    fname = cfg_filename(appname)
+def load_app_config(community_name, app_name):
+    fname = cfg_filename(community_name,app_name)
+    
     if os.path.isfile(fname):
         with open(fname) as f:
             config = toml.load(f)
+        # dynamically add data folder
+        cc = load_community_config(community_name)
+        config["data_folder"] = os.path.join(cc["apps_folder"],app_name,"data")
+        os.makedirs(config["data_folder"],exist_ok=True) 
+        config["logs_folder"] = os.path.join(cc["apps_folder"],app_name,"logs")
+        os.makedirs(config["logs_folder"],exist_ok=True) 
         return config
     else:
         return {}
 
-def create_app_config(appname,config):
+def create_app_config(community_name, app_name,config):
     # check if there is a glx config
     # if so, use that as the default
-    glx_config = load_app_config("glx")
-    if not glx_config:
-        glx_config = GLX_DEFAULT_CONFIG
+    #glx_config = load_local_config()
+    #if not glx_config:
+    #    glx_config = GLX_DEFAULT_CONFIG
     # merge glx config wit app config
-    config = config | glx_config
-    fname = save_app_config(appname,config)
+    #config = config | glx_config
+    fname = save_app_config(community_name,app_name,config)
     return fname
 
-def load_or_create_app_config(appname,config_template):
-    config = load_app_config(appname)
+def load_or_create_app_config(community_name, app_name, config_template):
+    config = load_app_config(community_name, app_name)
     if not config:
-        fn = create_app_config(appname,config_template)
+        fn = create_app_config(community_name, app_name, config_template)
         print("Config file created:",fn)
         print("Please fill it out carefully and run this app again")
         exit()
-    if not config["community_name"]:
-        print("Community name is not set.")
-        print("Check your config file:",cfg_filename(appname))
-        exit() 
     
-    print("config -------")
-    for k,v in config.items():
-        print(k,":",v)
-    print("--------------")
+    #print("config -------")
+    #for k,v in config.items():
+    #    print(k,":",v)
+    #print("--------------")
     
     return config
 
@@ -119,40 +155,34 @@ def load_or_create_app_config(appname,config_template):
 # local glx configs
 #
 ##############################################################
-#def set_active_community(community_name):
-#    if not community_name in [c for c in communities()]:
-#        print("unknown community, exiting.")
-#        exit(1)
-#
-#    config = load_local_config()
-#    config["community"] = community_name
-#    if not config["collection"]:
-#        config["collection"] = 1
-#    save_local_config(config)
+# this is only to save the community's name
+# in the local folder
 
-def save_local_config(config):
-    with open(".config.toml","w") as f:
-        toml.dump(config,f)
+def set_local_config(k,v):
+    config = load_local_config()
+    config[k] = v
+    save_local_config(config)
+    return config
 
-#def set_local_config(k,v):
-#    config = load_local_config()
-#    config[k] = v
-#    save_local_config(config)
-#    return config
+def create_local_config():
+    fname = save_local_config(GLX_DEFAULT_CONFIG)
+    return GLX_DEFAULT_CONFIG
 
 def load_local_config():
-    if os.path.isfile(".config.toml"):
-        with open(".config.toml") as f:
+    if os.path.isfile(GLX_CONFIG_NAME):
+        with open(GLX_CONFIG_NAME) as f:
             config = toml.load(f)
         return config
     else:
-        config = {"community":False,"collection":1,"attribute":False,"card":False}
-        save_local_config(config)
-    return config
+        return create_local_config()
+
+def save_local_config(config):
+    with open(GLX_CONFIG_NAME,"w") as f:
+        toml.dump(config,f)
 
 def get_active_community():
     c = load_local_config()
-    return c["community"]
+    return c["community_name"]
 ##############################################################
 #
 # attributes
@@ -220,3 +250,7 @@ def list_options(options,selected=None):
         prid = s+("   "+str(l["id"]))[-4:]
         print(prid,l["name"])
 
+def isoslug(dt=None):
+    if not dt:
+        dt = datetime.datetime.now()
+    return dt.isoformat().replace(":","_").replace(".","_")

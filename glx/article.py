@@ -4,6 +4,7 @@ from glx.card import Card
 from glx.attribute import Attribute
 from glx.api.community import CommunityApi
 import glx.helper as helper
+import datetime
 
 class Article(object):
     def __init__(self, community_name,article_id):
@@ -51,3 +52,9 @@ class Article(object):
             value = json.dumps(value.split(" "))
 
         return self.api.update_article(self.id,param,value)
+
+    def comments(self):
+        return self.api.get_article_comments(self.id)
+
+    def is_expired(self,days=7):
+        return datetime.datetime.fromisoformat(self.data("created_at")).timestamp() < (datetime.datetime.now()-datetime.timedelta(days=days)).timestamp()

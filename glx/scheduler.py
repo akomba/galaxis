@@ -5,6 +5,7 @@ import datetime
 from glx.card_attribute import CardAttribute
 from glx.api.community import CommunityApi
 import time
+from glx.logger import Logger
 
 def setup(community_name):
     # get folder
@@ -18,6 +19,7 @@ def setup(community_name):
 
 def schedule_expiring_value(community_name, collection_id, card_id, attribute_id, value, expiration):
     config,sf = setup(community_name)
+    Logger().init(community_name)
 
     # expiration in minutes
     exp = datetime.datetime.now() + datetime.timedelta(minutes=expiration)
@@ -37,6 +39,7 @@ def schedule_expiring_value(community_name, collection_id, card_id, attribute_id
     filename = "_".join([filename,community_name,str(collection_id),str(card_id),str(attribute_id),str(value)])
     filename = os.path.join(sf,filename+".json")
 
+    Logger().logger.info("SCHE create FILE "+filename+" COLL "+str(collection_id)+" CARD "+str(card_id)+"  ATTR "+str(attribute_id)+" VAL "+str(value))
     helper.save_as_json(filename,schedule)
     return filename
 
@@ -82,14 +85,13 @@ def process(community_name):
             new_value = current_value - e["value"]
             if new_value < 0:
                 # removing attribute if value is 0
-                print("value is zero or less, removing.")
+                Logger().logger.info("SCHE process: value <=0 removing"+" FILE "+event+" COLL "+str(e["collection_id"])+" CARD "+str(e["card_id"])+"  ATTR "+str(e["attribute_id"])+" VAL "+str(e["value"]))
                 attribute.remove()
             else:
-                print("setting it to:",new_value)
+                Logger().logger.info("SCHE process: set value"+" FILE "+event+" COLL "+str(e["collection_id"])+" CARD "+str(e["card_id"])+"  ATTR "+str(e["attribute_id"])+" VAL "+str(new_value))
                 resp = attribute.set_value(new_value)
-                print("resp:",resp)
         else:
-            print("attribute does not exist:",e["community_name"],e["collection_id"],e["card_id"],e["attribute_id"])
+            Logger().logger.info("SCHE process: no such attribute"+" FILE "+event+" COLL "+str(e["collection_id"])+" CARD "+str(e["card_id"])+"  ATTR "+str(e["attribute_id"]))
 
         # rename file
         t = event.split("/")

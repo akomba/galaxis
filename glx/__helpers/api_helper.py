@@ -1,76 +1,74 @@
 import requests
 import json
+from glx.logger import Logger
 
-TIMEOUT = 10
+TIMEOUT = 20
+DEBUG = False
 
-def call_api(url,api_key=None):
-    url = url+"?limit=20000&page=1"
-    assets = _call_api(url,api_key)
-    if assets is None:
-        return None
 
-    #if "pagination" in assets:
-    #    # determine number of pages
-    #    assets = _call_api(url+"?limit=100")
-    #    pag = assets["pagination"]
-    #    #print(pag)
-    #    for p in range(2,pag["pages"]+1):
-    #        #print("getting page",p)
-    #        a = _call_api(url+"?limit=100&page="+str(p))
-    #        assets["data"]+=a["data"]
-
-    return assets
-
-def delete(url,api_key,data):
-    headers = {'x-api-key': api_key, "Content-Type":"application/json"}
-    try:
-        response = requests.delete(url, headers=headers, data=json.dumps(data))
-
-        if response.status_code == 200:
-            return response.status_code
-        else:
-            print('Error:', response.status_code)
-            return None
-
-    except requests.exceptions.RequestException as e:
-        print('Error:', e)
-        return None
-
-def put(url,api_key,data):
-    headers = {'x-api-key': api_key, "Content-Type":"application/json"}
-    try:
-        response = requests.put(url, headers=headers, data=json.dumps(data),timeout=TIMEOUT)
-
-        if response.status_code in [200,201]:
-            return response.status_code
-        else:
-            print('Error:', response.status_code)
-            return None
-
-    except requests.exceptions.RequestException as e:
-        print('Error:', e)
-        return None
-
-def _call_api(url,api_key=None):
-    try:
-        if api_key:
+def call_api(url,reqtype,**kwargs):
+    lg = Logger()
+    api_key = kwargs.get("api_key",None)
+    data = kwargs.get("data",None)
+    if DEBUG:
+        print(">>>API URL: >"+reqtype[:3]+"< "+url)
+    
+    if api_key:
+        if reqtype == "get":
             headers = {'x-api-key': api_key, "accept":"application/json"}
-            #response = requests.get(url,headers,timeout=TIMEOUT)
         else:
-            headers = {}
+            headers = {'x-api-key': api_key, "Content-Type":"application/json"}
+    else:
+        headers = {}
+       
+    try:
+        if reqtype == "get":
+            response = requests.get(url, headers=headers, timeout=TIMEOUT)
+        elif reqtype == "delete":
+            if data:
+                response = requests.delete(url, headers=headers, data=json.dumps(data),timeout=TIMEOUT)
+            else:
+                response = requests.delete(url, headers=headers,timeout=TIMEOUT)
+        elif reqtype == "put":
+            if data:
+                response = requests.put(url, headers=headers, data=json.dumps(data),timeout=TIMEOUT)
+            else:
+                response = requests.put(url, headers=headers,timeout=TIMEOUT)
+        elif reqtype == "patch":
+            if data:
+                response = requests.patch(url, headers=headers, data=json.dumps(data),timeout=TIMEOUT)
+            else:
+                response = requests.patch(url, headers=headers,timeout=TIMEOUT)
+        elif reqtype == "post":
+            if data:
+                response = requests.post(url, headers=headers, data=json.dumps(data),timeout=TIMEOUT)
+            else:
+                response = requests.post(url, headers=headers,timeout=TIMEOUT)
+        else:
+            print("API BAD REQ: " +reqtype+" "+url)
+            lg.logger.debug("API BAD REQ: " +reqtype+" "+url)
+            return None
 
-        response = requests.get(url, headers=headers)
-        if response.status_code == 200:
+    except requests.exceptions.RequestException as e:
+        print('Error:', e)
+        lg.logger.debug("API ERROR: " +str(e) +" "+reqtype+" "+url)
+        return None
+
+    if response.status_code in [200,201,204]:
+        lg.logger.info("API: "+str(response.status_code)+" "+reqtype+" "+url)
+        #if DEBUG:
+        #    print(">>>API "+str(response.status_code)+"    "+reqtype[:3]+" "+url)
+        if response.status_code == 204:
+            return None
+        else:
             assets = response.json()
             return assets
-        else:
-            print('Error:', response.status_code)
-            print(curl_request(url,"GET",headers,None))
-            return None
-
-    except requests.exceptions.RequestException as e:
-        print('Error:', e)
+    else:
+        print('Error:', response.status_code)
+        #print(curl_request(url,"GET",headers,None))
+        lg.logger.debug("API BAD RESP: " +str(response.status_code) +" "+reqtype+" "+url)
         return None
+
 
 def curl_request(url,method,headers,payloads):
     # construct the curl command from request

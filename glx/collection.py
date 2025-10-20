@@ -36,14 +36,10 @@ class Collection(object):
 
     def add_attribute(self,attribute_id):
         # add attribute to all cards in this collection
-        for card in self.cards():
-            card.add_attribute(attribute_id)
-
+        return self.api.add_attribute_to_cards(self.id,attribute_id)
 
     def remove_attribute(self,attribute_id):
-        # remove attribute from all cards
-        for card in self.cards():
-            card.remove_attribute(attribute_id)
+        return self.api.remove_attribute_from_cards(self.id,attribute_id)
 
     ###############################################################
     # cards
@@ -63,4 +59,4 @@ class Collection(object):
         if kwargs.get("raw",None):
             return cards
         else:
-            return [Card(self.community_name,self.id,c["id"]) for c in cards]
+            return [Card(self.community_name,self.id,c["id"],c) for c in cards]

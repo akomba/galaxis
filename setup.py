@@ -43,9 +43,10 @@ setup(
     packages=find_packages(exclude=EXCLUDE_FROM_PACKAGES),
     include_package_data=True,
     keywords=[],
-    scripts=[],
+    scripts=["bash_scripts/glxloop"],
     entry_points={"console_scripts": [
         "glx=glx.glx:main",
+        "glxsocket=glx.glxsocket:main",
         "communities=glx.communities_cli:main",
         "attributes=glx.attributes_cli:main",
         "members=glx.members_cli:main",
