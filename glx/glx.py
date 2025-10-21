@@ -20,12 +20,13 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("-c", "--community")
     parser.add_argument("-l", "--list")
+    parser.add_argument('init', nargs='?')
     args = parser.parse_args()
 
     communities = helper.communities()
     config = helper.load_global_config()
 
-    if "init" in sys.argv[1:]:
+    if args.init:
         community_name = input("community name (no spaces pls): ")
 
         # check if name is taken
