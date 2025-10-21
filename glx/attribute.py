@@ -7,8 +7,6 @@ class Attribute(object):
         self.collection_id = collection_id
         self.id = attribute_id
         self.api = CommunityApi(community_name)
-        print("collection_id:",self.collection_id)
-        print("id:",self.id)
         self.data = self.api.get_attribute(self.collection_id,self.id)
         self.name = self.data["name"]
         self.description = self.data["description"]

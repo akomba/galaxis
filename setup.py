@@ -50,8 +50,7 @@ setup(
         "communities=glx.communities_cli:main",
         "attributes=glx.attributes_cli:main",
         "members=glx.members_cli:main",
-        "scheduler=glx.scheduler_cli:main",
-        "leaker=glx.leaker_cli:main"
+        "scheduler=glx.scheduler:main"
         ]},
     data_files=[("share/man/man6", ["man/glx.6"])],
     zip_safe=False,

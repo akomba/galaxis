@@ -10,7 +10,7 @@ from glx.collection import Collection
 import importlib
 import argparse
 
-__version__ = "0.4.1"
+__version__ = "0.4.3"
 
 def main():
 
@@ -36,7 +36,7 @@ def main():
             exit(1)
 
         #if not, create folder structure and ask for api key and community id
-        api_key = input("api key (blank for read only community): ")
+        api_key = input("api key: ")
         community_id = input("community id: ")
 
         # create community root
@@ -56,11 +56,24 @@ def main():
         with open(config_file,"w") as f:
             toml.dump(config,f)
 
+        print("community config file saved to",config_file)
         # data folder
         os.makedirs(os.path.join(d,"data"), exist_ok = True)
 
         # apps folder
         os.makedirs(os.path.join(d,"apps"), exist_ok = True)
+
+        # create scheduler app
+        os.makedirs(os.path.join(d,"apps","scheduler"), exist_ok = True)
+        os.makedirs(os.path.join(d,"apps","scheduler","data","active"), exist_ok = True)
+        os.makedirs(os.path.join(d,"apps","scheduler","data","processed"), exist_ok = True)
+        # scheduler config
+        config_template = {
+                "module":"glx",
+                "repeat":60
+        }
+        config = helper.load_or_create_app_config(community_name,"scheduler",config_template)
+
 
         #############################################
 
@@ -77,7 +90,7 @@ def main():
         if args.list == "attributes":
             collection = Collection(args.community,1)
             helper.list_options(collection.attributes(raw=True))
-        exit()
+        exit(0)
 
     # try to get apps
     # don't worry how the apps get there
@@ -97,7 +110,12 @@ def main():
             if "repeat" in conf:
                 if conf["repeat"] == 1 or lc["iteration"] % conf["repeat"] == 0:
                     print("*",community,"> running",app,"(every",conf["repeat"],"iterations)")
-                    m = importlib.import_module(app+"."+app)
+                    # check for module info in the config file
+                    if "module" in conf:
+                        mname = conf["module"]
+                    else:
+                        mname = app
+                    m = importlib.import_module(mname+"."+app)
                     m.main(community)
     # increase iteration
     lc["iteration"] += 1

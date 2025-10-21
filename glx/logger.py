@@ -26,6 +26,7 @@ class Logger(metaclass=Singleton):
             logfilename = os.path.join(cc["log_folder"],community_name+".log")
         else:
             logfilename = ".logs.log"
+        print("logfilename:",logfilename)
         handler = TimedRotatingFileHandler(logfilename, when="midnight", interval=1)
         handler.suffix = "%Y%m%d"
         formatter = logging.Formatter('%(asctime)s %(name)s %(levelname)s %(message)s')

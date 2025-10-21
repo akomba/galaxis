@@ -141,7 +141,6 @@ def load_or_create_app_config(community_name, app_name, config_template):
     if not config:
         fn = create_app_config(community_name, app_name, config_template)
         print("Config file created:",fn)
-        print("Please fill it out carefully and run this app again")
         exit()
     
     #print("config -------")
@@ -255,3 +254,31 @@ def isoslug(dt=None):
     if not dt:
         dt = datetime.datetime.now()
     return dt.isoformat().replace(":","_").replace(".","_")
+
+
+def schedule_expiring_value(community_name, collection_id, card_id, attribute_id, value, expiration):
+    conf = load_app_config(community_name,"scheduler")
+    sf = os.path.join(conf["data_folder"],"active")
+
+    # expiration in minutes
+    exp = datetime.datetime.now() + datetime.timedelta(minutes=expiration)
+
+    # schedule structure
+    schedule = {
+            "community_name": community_name,
+            "collection_id" : collection_id,
+            "card_id"       : card_id,
+            "attribute_id"  : attribute_id,
+            "value"         : value,
+            "expiration"    : exp.isoformat()
+            }
+
+    # save file
+    filename = exp.isoformat().replace(":","_").replace(".","_")
+    filename = "_".join([filename,community_name,str(collection_id),str(card_id),str(attribute_id),str(value)])
+    filename = os.path.join(sf,filename+".json")
+
+    #Logger().logger.info("SCHE create FILE "+filename+" COLL "+str(collection_id)+" CARD "+str(card_id)+"  ATTR "+str(attribute_id)+" VAL "+str(value))
+    save_as_json(filename,schedule)
+    return filename
+

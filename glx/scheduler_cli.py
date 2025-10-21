@@ -42,7 +42,7 @@ def main():
         exit()
 
     print("Active:",len(scheduler.list_active(community_name)))
-    scheduler.process(community_name)
+    scheduler.main(community_name)
 
 if __name__ == "__main__":
     main()

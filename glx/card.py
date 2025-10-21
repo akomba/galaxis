@@ -2,7 +2,6 @@
 from glx.card_attribute import CardAttribute
 from glx.api.community import CommunityApi
 import glx.helper as helper
-import glx.scheduler as sc
 from glx.logger import Logger
 
 class Card(object):
@@ -68,7 +67,7 @@ class Card(object):
 
         if expiration:
             # create scheduler event to decrease it later
-            fn = sc.schedule_expiring_value(self.community_name,self.collection_id,self.id,attribute_id,value,expiration)
+            fn = helper.schedule_expiring_value(self.community_name,self.collection_id,self.id,attribute_id,value,expiration)
 
     def remove_attribute(self,attribute_id):
         Logger().logger.info("CARD "+str(self.id)+" "+str(self.collection_id)+" rem attribute "+str(attribute_id))
