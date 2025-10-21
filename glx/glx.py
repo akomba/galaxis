@@ -24,7 +24,7 @@ def main():
     communities = helper.communities()
     config = helper.load_global_config()
 
-    if if args.version:
+    if args.version:
         print(__version__)
         exit(0)
     if args.init:
