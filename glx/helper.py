@@ -27,7 +27,8 @@ def load_global_config():
     # load global config
     gc = { "SERVER_URL":    "https://app.galaxis-community.com/%COMMUNITY_ID%/communityserver" }
     #gc = { "API_ROOT":    "https://app.galaxis-community.com/%COMMUNITY_ID%/communityserver/api" }
-    gc["DATA_ROOT"] = os.path.join(os.path.expanduser("~user"),".local/share/glx/data")
+    #gc["DATA_ROOT"] = os.path.join(os.path.expanduser("~user"),".local/share/glx/data")
+    gc["DATA_ROOT"] = ".data"
     gc["COMMUNITIES"] = os.path.join(gc["DATA_ROOT"],"communities")
     os.makedirs(gc["DATA_ROOT"],exist_ok=True)
     os.makedirs(gc["COMMUNITIES"],exist_ok=True)
