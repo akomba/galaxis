@@ -1,8 +1,23 @@
 #!/usr/bin/env bash
 while true
 do
-        echo '= start ===' `date`
-        glx
-        echo '= end =====' `date`
+    echo '= start ===' `date`
+
+    for i in $(glx communities); do
+        echo $i
+        result=$(pgrep -a glx | grep $i | wc -c)
+
+        # websocket
+        if [ $((result)) -eq 0 ]; then
+            echo "starting websocket client for" $i
+            glxsocket -c $i &
+        fi
+
+        # loop
+        glx process -l $i
+    done
+
+    echo '= end =====' `date`
     sleep 60
 done
+
