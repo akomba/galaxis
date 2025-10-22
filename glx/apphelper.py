@@ -1,5 +1,4 @@
 import glx.helper as helper
-import argparse
 from glx.logger import Logger
 from glx.collection import Collection
 from glx.api.mothership import MothershipApi
@@ -7,31 +6,14 @@ from glx.api.community import CommunityApi
 
 
 def appstart(version,community_name):
-    parser = argparse.ArgumentParser()
-    parser.add_argument("-v", "--version", action="store_true")
-    parser.add_argument("-c", "--community")
-    args = parser.parse_args()
-
-    if args.version:
-        print(version)
-        exit(0)
-
     # find community
     if not community_name:
-        if args.community:
-            # community is explicitly given
-            community_name = args.community
-        else:
-            print("No community name is given, exiting.")
-            exit(0)
-    return parser,community_name
+        print("No community name is given, exiting.")
+        exit(0)
+    return community_name
 
 def appupdate(cv,APPNAME,CONFIG_TEMPLATE,version,asset_name,community_name):
-    parser,community_name = appstart(version,community_name)
-    parser.add_argument("-a", "--add", type=int)
-    args = parser.parse_args()
-    
-    print("Community:",community_name)
+    community_name = appstart(version,community_name)
     
     config = helper.load_or_create_app_config(community_name,APPNAME,CONFIG_TEMPLATE)
     Logger().init(community_name)

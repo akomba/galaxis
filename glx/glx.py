@@ -100,6 +100,7 @@ def main():
             lc[community] = 0
         iteration = lc[community]
 
+        print(community,"apps:",apps(community).keys())
         for appname,conf in apps(community).items():
             # read config file
             if "repeat" in conf:
@@ -109,8 +110,9 @@ def main():
                     if "module" in conf:
                         mname = conf["module"]
                     else:
-                        mname = app
-                    m = importlib.import_module(mname+"."+app)
+                        mname = appname
+
+                    m = importlib.import_module(mname+"."+appname)
                     m.main(community)
     
         # increase iteration
@@ -153,6 +155,7 @@ def apps(community):
         conf = helper.load_app_config(community,app)
         if conf:
             apps[app] =  conf
+    
     return apps
 
 if __name__ == "__main__":

@@ -14,7 +14,7 @@ do
         fi
 
         # loop
-        glx process -l $i
+        glx process -c $i
     done
 
     echo '= end =====' `date`
