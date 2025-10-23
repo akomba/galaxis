@@ -10,7 +10,7 @@ from glx.collection import Collection
 import importlib
 import argparse
 
-__version__ = "0.4.4"
+__version__ = "0.5"
 
 def main():
 

@@ -3,6 +3,38 @@ from glx.logger import Logger
 from glx.collection import Collection
 from glx.api.mothership import MothershipApi
 from glx.api.community import CommunityApi
+import glx.helper as helper
+import argparse
+
+def setup_parser(version,app_name):
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-v", "--version", action="store_true")
+    parser.add_argument("-i", "--info", action="store_true")
+    parser.add_argument("-c", "--community")
+    return parser
+
+def process_common_args(args,version,app_name):
+    if args.version:
+        print(version)
+        exit(0)
+
+    if not args.community:
+        print("Please specify the community name with -c")
+        exit(0)
+
+    if args.info:
+        # app name
+        print("Name:",app_name)
+        print("Version:",version)
+        
+        # config location
+        config_loc = helper.config_location(args.community,app_name)
+        print("Config location:",config_loc)
+
+        config = helper.load_app_config(args.community,app_name)
+        # app status
+        helper.pretty(config)
+        exit(0)
 
 
 def appstart(version,community_name):

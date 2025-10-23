@@ -90,7 +90,7 @@ def load_app_data(community_name,app_name,title):
 # local app configs
 #
 ##############################################################
-def cfg_filename(community_name, app_name):
+def config_location(community_name, app_name):
     # find proper config path
     cc = load_community_config(community_name)
     appconf_folder =  os.path.join(cc["apps_folder"],app_name)
@@ -98,7 +98,7 @@ def cfg_filename(community_name, app_name):
     return os.path.join(appconf_folder,"."+app_name+".toml")
 
 def save_app_config(community_name, app_name,config):
-    fname = cfg_filename(community_name,app_name)
+    fname = config_location(community_name,app_name)
     with open(fname,"w") as f:
         toml.dump(config,f)
     return fname
@@ -110,7 +110,7 @@ def set_app_config(community_name, app_name,k,v):
     return config
 
 def load_app_config(community_name, app_name):
-    fname = cfg_filename(community_name,app_name)
+    fname = config_location(community_name,app_name)
     
     if os.path.isfile(fname):
         with open(fname) as f:
@@ -280,5 +280,12 @@ def schedule_expiring_value(community_name, collection_id, card_id, attribute_id
 
     #Logger().logger.info("SCHE create FILE "+filename+" COLL "+str(collection_id)+" CARD "+str(card_id)+"  ATTR "+str(attribute_id)+" VAL "+str(value))
     save_as_json(filename,schedule)
+    print("helper: expiration file saved to",filename)
     return filename
 
+def pretty(d, indent=0):
+    for key, value in d.items():
+        if isinstance(value, dict):
+            pretty(value, indent+1)
+        else:
+            print('\t' * indent + str(key) + '\t' * (indent+1) + str(value))
