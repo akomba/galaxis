@@ -10,7 +10,7 @@ from glx.collection import Collection
 import importlib
 import argparse
 
-__version__ = "0.5"
+__version__ = "0.5.1"
 
 def main():
 
@@ -20,7 +20,7 @@ def main():
     parser.add_argument("process", nargs='?')
     parser.add_argument("-a", "--attribute")
     parser.add_argument("-l", "--list")
-    parser.add_argument('init', nargs='?')
+    parser.add_argument('--init', action="store_true")
     args = parser.parse_args()
 
     communities = helper.communities()
