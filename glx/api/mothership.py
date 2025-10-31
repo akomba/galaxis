@@ -1,11 +1,8 @@
 import glx.__helpers.api_helper as api_helper
-from glx.logger import Logger
 
 class MothershipApi(object):
     def __init__(self,community_name=None):
         self.url = "https://mothership.galaxis.xyz/api"
-        lg = Logger()
-        lg.init(community_name)
 
     def get_assets(self):
         url = self.url+"/assets"

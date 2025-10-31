@@ -59,9 +59,9 @@ class Card(object):
         # if attribute is already there, we take its value
         if self.has_attribute(attribute_id):
             ca = self.attribute(attribute_id)
-            value = ca.value() + value
-            ca.set_value(value)
-            Logger().logger.info("CARD "+str(self.id)+" "+str(self.collection_id)+" inc attribute "+str(attribute_id)+" value "+str(value))
+            nv = ca.value() + value
+            ca.set_value(nv)
+            Logger().logger.info("CARD "+str(self.id)+" "+str(self.collection_id)+" inc attribute "+str(attribute_id)+" value "+str(nv))
         else:
             self.add_attribute(attribute_id,value)
 
@@ -71,4 +71,8 @@ class Card(object):
 
     def remove_attribute(self,attribute_id):
         Logger().logger.info("CARD "+str(self.id)+" "+str(self.collection_id)+" rem attribute "+str(attribute_id))
+        
+        # also remove any scheduled tasks
+        # card id, attribute_id
+        helper.remove_scheduled_tasks(self.id,attribute_id,self.community_name)
         return self.api.remove_attribute_from_card(self.collection_id,self.id,attribute_id)

@@ -47,10 +47,7 @@ setup(
     entry_points={"console_scripts": [
         "glx=glx.glx:main",
         "glxsocket=glx.glxsocket:main",
-        "communities=glx.communities_cli:main",
-        "attributes=glx.attributes_cli:main",
-        "members=glx.members_cli:main",
-        "scheduler=glx.scheduler:main"
+        "mothership=glx.mothership_cli:cli"
         ]},
     data_files=[("share/man/man6", ["man/glx.6"])],
     zip_safe=False,

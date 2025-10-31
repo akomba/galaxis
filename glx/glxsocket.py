@@ -15,17 +15,13 @@ interactions = []
 
 @sio.on('CardAttributeInteracted')
 async def any_event(data):
-    #{'collection_id': 1, 'token_id': 1, 'attribute_id': 42, 'data': {'interacted_value': 'Catch'}}
     if "token_id" in data:
         data["card_id"] = data["token_id"] # I don't want to work wit token_id
 
     for i in interactions:
         if i["attribute_id"] == data["attribute_id"] and i["collection_id"] == data["collection_id"]:
-            # then we have a matching record.
-            # let us execute
             m = importlib.import_module(i["module"])
             m.interact(community_name,i["app_name"],data["card_id"],data["data"])
-    #print("data:",data)
 
 @sio.event
 async def connect():

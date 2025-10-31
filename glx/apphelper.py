@@ -5,22 +5,23 @@ from glx.api.mothership import MothershipApi
 from glx.api.community import CommunityApi
 import glx.helper as helper
 import argparse
+import os
 
-def setup_parser(version,app_name):
-    parser = argparse.ArgumentParser()
-    parser.add_argument("-v", "--version", action="store_true")
-    parser.add_argument("-i", "--info", action="store_true")
-    parser.add_argument("-c", "--community")
-    return parser
+def setup_parser():
+    p = argparse.ArgumentParser()
+    p.add_argument("-v", "--version", action="store_true")
+    p.add_argument("-i", "--info", action="store_true")
+    p.add_argument("-c", "--community")
+    p.add_argument("--collection")
+    return p
 
 def process_common_args(args,version,app_name):
     if args.version:
-        print(version)
+        if version:
+            print(version)
         exit(0)
 
-    if not args.community:
-        print("Please specify the community name with -c")
-        exit(0)
+    community_name = helper.select_community(args.community)
 
     if args.info:
         # app name
@@ -28,30 +29,24 @@ def process_common_args(args,version,app_name):
         print("Version:",version)
         
         # config location
-        config_loc = helper.config_location(args.community,app_name)
+        config_loc = helper.config_location(community_name,app_name)
         print("Config location:",config_loc)
 
-        config = helper.load_app_config(args.community,app_name)
+        config = helper.load_app_config(community_name,app_name)
         # app status
+        print("= config =========")
         helper.pretty(config)
-        exit(0)
-
-
-def appstart(version,community_name):
-    # find community
-    if not community_name:
-        print("No community name is given, exiting.")
+        print("==================")
         exit(0)
     return community_name
 
-def appupdate(cv,APPNAME,CONFIG_TEMPLATE,version,asset_name,community_name):
-    community_name = appstart(version,community_name)
+def appupdate(cv,APPNAME,config,asset_name,community_name):
+    #community_name = appstart(version,community_name)
     
-    config = helper.load_or_create_app_config(community_name,APPNAME,CONFIG_TEMPLATE)
     Logger().init(community_name)
     
     collection = Collection(community_name,config["collection_id"])
-    mapi = MothershipApi(community_name) # we need the community name because of logging
+    mapi = MothershipApi()
     assets = mapi.get_asset_owners(asset_name)
     cards = collection.cards(raw=True)
     instances = collection.attribute(config["attribute_id"]).instances()
@@ -62,6 +57,10 @@ def appupdate(cv,APPNAME,CONFIG_TEMPLATE,version,asset_name,community_name):
         k["owner"] = k["owner"].lower()
         cards_by_id[k["id"]] = k
         cards_by_owner[k["owner"]] = k
+
+    #print("cards by id")
+    #for k,v in cards_by_id.items():
+    #    print(k,v)
 
     #print("community:",community_name)
     print("      ",asset_name, "assets:",len(assets),"cards:",len(cards),"instances:",len(instances))
@@ -91,13 +90,9 @@ def appupdate(cv,APPNAME,CONFIG_TEMPLATE,version,asset_name,community_name):
     
     for k,v in assets.items():
         if not k in instance_owners:
-            value = cv(len(v))
+            value = cv(v)
             if k in cards_by_owner:
-                # this asset owner has a relevant card
-                #print("]]] cards_by_owner[k]:",cards_by_owner[k])
                 card = collection.card(cards_by_owner[k]["id"])
-                #print("]]] config:",config)
-                #print("]]] card id:",card.id)
                 card.add_attribute(config["attribute_id"],value)
 
                 print("adding attribute to card",card.id,"with value",value)
@@ -106,9 +101,8 @@ def appupdate(cv,APPNAME,CONFIG_TEMPLATE,version,asset_name,community_name):
     for instance in instances:
         o = cards_by_id[instance["card_id"]]["owner"]
         old_val = instance["value"]
-        new_val = cv(len(assets[o]))
+        new_val = cv(assets[o])
         if old_val != new_val:
             print("card",instance["card_id"],"value changed from",old_val,"to",new_val)
             card = collection.card(instance["card_id"])
             card.add_attribute(config["attribute_id"],new_val)
-

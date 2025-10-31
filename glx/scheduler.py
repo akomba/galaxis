@@ -8,7 +8,6 @@ from glx.community import Community
 import time
 from glx.logger import Logger
 
-
 def list_active(community_name):
     conf = helper.load_app_config(community_name,"scheduler")
     sf = os.path.join(conf["data_folder"],"active")

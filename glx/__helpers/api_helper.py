@@ -1,13 +1,12 @@
 import requests
 import json
-from glx.logger import Logger
 
 TIMEOUT = 20
 DEBUG = False
 
 
 def call_api(url,reqtype,**kwargs):
-    lg = Logger()
+    #lg = Logger()
     api_key = kwargs.get("api_key",None)
     data = kwargs.get("data",None)
     if DEBUG:
@@ -46,16 +45,16 @@ def call_api(url,reqtype,**kwargs):
                 response = requests.post(url, headers=headers,timeout=TIMEOUT)
         else:
             print("API BAD REQ: " +reqtype+" "+url)
-            lg.logger.debug("API BAD REQ: " +reqtype+" "+url)
+            #lg.logger.debug("API BAD REQ: " +reqtype+" "+url)
             return None
 
     except requests.exceptions.RequestException as e:
         print('Error:', e)
-        lg.logger.debug("API ERROR: " +str(e) +" "+reqtype+" "+url)
+        #lg.logger.debug("API ERROR: " +str(e) +" "+reqtype+" "+url)
         return None
 
     if response.status_code in [200,201,204]:
-        lg.logger.info("API: "+str(response.status_code)+" "+reqtype+" "+url)
+        #lg.logger.info("API: "+str(response.status_code)+" "+reqtype+" "+url)
         #if DEBUG:
         #    print(">>>API "+str(response.status_code)+"    "+reqtype[:3]+" "+url)
         if response.status_code == 204:
@@ -66,7 +65,7 @@ def call_api(url,reqtype,**kwargs):
     else:
         print('Error:', response.status_code)
         #print(curl_request(url,"GET",headers,None))
-        lg.logger.debug("API BAD RESP: " +str(response.status_code) +" "+reqtype+" "+url)
+        #lg.logger.debug("API BAD RESP: " +str(response.status_code) +" "+reqtype+" "+url)
         return None
 
 

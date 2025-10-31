@@ -3,7 +3,7 @@ while true
 do
     echo '= start ===' `date`
 
-    for i in $(glx communities); do
+    for i in $(glx -l communities); do
         echo $i
         result=$(pgrep -a glx | grep $i | wc -c)
 

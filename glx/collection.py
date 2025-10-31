@@ -11,12 +11,13 @@ class Collection(object):
         self.id = collection_id
         self.community_name = community_name
         self.api = CommunityApi(community_name)
+        self.dt = self.api.get_collection(self.id)
 
     ###############################################################
     # data
     ###############################################################
     def data(self):
-        return self.api.get_collection(self.id)
+        return self.dt
         
     ###############################################################
     # attributes
