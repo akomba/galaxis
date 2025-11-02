@@ -39,7 +39,7 @@ def process_leaks(community_name):
     for collection in community.collections():
         leakers = {}
         for att in collection.attributes():
-            if "leak" in att.config():
+            if "leak" in att.config() and att.config("leak"):
                 print("LK:",att.name,att.config("leak"))
                 leakers[att.id] = att
         # get all members
@@ -47,7 +47,7 @@ def process_leaks(community_name):
             print("no leaking attributes found")
             return
 
-        print("leakers:",leakers)
+        print("leakers:",[l.name for l in leakers])
         cards = collection.cards()
         for card in cards:
             catts = card.attributes(raw=True)

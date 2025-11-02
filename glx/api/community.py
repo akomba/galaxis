@@ -111,19 +111,6 @@ class CommunityApi(object):
     def get_card(self,collection_id, card_id):
         url=self.urlv2+"/collections/"+str(collection_id)+"/cards/"+str(card_id)
         res = api_helper.call_api(url,"get",api_key=self.key)
-        # FIXME temp data massage
-        # get card attribute ids
-
-        #card = {}
-        #card["id"] = res["token_id"]
-        #card["owner"] = res["owner"]
-        #card["image"] = res["image"]
-        #card["citizenship_status"] = "FIXME" # FIXME
-        #card["subscription_data"] = res["subscription_data"]
-        #card["is_banned_from_commenting"] = res["is_banned_from_commenting"]
-        #card["referrer"] = res["referrer"]
-        #card["attribute_ids"] = [a["attribute_id"] for a in self.get_card_attributes(collection_id,card_id)]
-
         return res
     
     #def get_cards_with_attribute(self,attribute_id):
@@ -146,6 +133,10 @@ class CommunityApi(object):
     def get_attribute(self,collection_id,attribute_id):
         url = self.urlv2+"/collections/"+str(collection_id)+"/attributes/"+str(attribute_id)
         return api_helper.call_api(url,"get",api_key=self.key)
+
+    def update_attribute(self,collection_id,attribute_id,payload):
+        url = self.urlv2+"/collections/"+str(collection_id)+"/attributes/"+str(attribute_id)
+        return api_helper.call_api(url,"patch",api_key=self.key,data=payload)
 
     ##################################################################################
     #

@@ -9,6 +9,8 @@ from glx.community import Community
 from glx.collection import Collection
 import importlib
 import argparse
+import json
+import ast
 
 __version__ = "0.5.6"
 
@@ -21,6 +23,8 @@ def main():
     parser.add_argument("-p", "--process", action="store_true")
     parser.add_argument("-a", "--attribute")
     parser.add_argument("-l", "--list")
+    parser.add_argument("-s", "--set")
+    parser.add_argument("-i", "--info", action="store_true")
     parser.add_argument('--init', action="store_true")
     args = parser.parse_args()
 
@@ -79,11 +83,62 @@ def main():
     else:
         collection_id = 1
 
+    # if a single attribute is selected
+    if args.attribute:
+        if args.attribute.isnumeric():
+            attid = int(args.attribute)
+        else:
+            # get list of attributes
+            attributes = _list_of_attributes(community_name,collection_id)
+            atts = []
+            for att in attributes:
+                if args.attribute.lower() in att["name"].lower():
+                    atts.append(att)
+            if len(atts)==0:
+                print("Attribute not found:",args.attribute)
+                exit(0)
+            elif len(atts) > 1:
+                print("Multiple attributes found for",args.attribute,":")
+                for a in atts:
+                    print(a)
+                print("Be more specific or use the ID.")
+                exit(0)
+            print(atts)
+            attid = int(atts[0]["id"])
+        collection = Collection(community_name,collection_id)
+        attribute = collection.attribute(attid)
+        print(attribute.name)
+        #print("Todo: properties (leaking, max value, etc)")
+        #print("Cards: todo: show  attribute value on cards")
+        if args.info:
+            # check for local modifiers
+            # check for online settings
+            print("Config:")
+            helper.pretty(_attribute_config_list(attribute))
+        if args.list:
+            if args.list == "cards":
+                # list cards with the given attribute
+                print("Cards with",attribute.name+":")
+                for instance in sorted(attribute.instances(), key=lambda d: d["card_id"]):
+                    print(" ",instance["card_id"],":",instance["value"])
+                    if instance["interacted_with"]:
+                        print("   intercated at:",instance["interacted_at"])
+                        print("   int value    :",instance["interacted_value"])
+        if args.set:
+            upd = ast.literal_eval(args.set)
+            if not type(upd) is dict:
+                print("error: the set argument has to be a dictionary.")
+                exit()
+
+            # do the update
+            attribute.update(upd)
+        exit(0)
+
     # lists about the selected community
     if args.list:
+        #if args.list in ["attributes","apps","cards","communities"]:
         if args.list == "attributes":
-            collection = Collection(community_name,collection_id)
-            helper.list_options(collection.attributes(raw=True))
+            helper.list_options(_list_of_attributes(community_name,collection_id))
         elif args.list == "apps":
             applist = apps(community_name)
             if applist:
@@ -102,15 +157,18 @@ def main():
             print("unknown option:",args.list)
         exit(0)
 
-    elif args.attribute:
-        collection = Collection(community_name,collection_id)
-        attribute = collection.attribute(args.attribute)
-        print(attribute.name)
-        print("Todo: properties (leaking, max value, etc)")
-        print("Cards: todo: show  attribute value on cards")
-        for instance in attribute.instances():
-            print("   "+str(instance["card_id"]))
-        exit(0)
+def _attribute_config_list(attribute):
+    config = attribute.config()
+    if "interactive_config" in config.keys() and config["interactive_config"]:
+        ic = config.pop("interactive_config")
+        for k,v in ic.items():
+            config["ic_"+k] = v
+    return config
+
+
+def _list_of_attributes(community_name,collection_id):
+    collection = Collection(community_name,collection_id)
+    return collection.attributes(raw=True)
 
 def init_new_community():
     community_name = input("community name (no spaces pls): ")
@@ -179,5 +237,3 @@ def apps(community_name):
             apps.append({"config":conf,"id": counter,"name":app})
     return apps
 
-if __name__ == "__main__":
-    main()

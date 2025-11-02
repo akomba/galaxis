@@ -380,10 +380,13 @@ def prettyrow(row):
     print(x)
 
 
-def pretty(d, indent=0):
+def pretty(d):
+    klen = 0
+    for key in d.keys():
+        if len(str(key)) > klen:
+            klen = len(str(key))
+
     for key, value in d.items():
-        if isinstance(value, dict):
-            pretty(value, indent+1)
-        else:
-            print('\t' * indent + str(key) + '\t' * (indent+1) + str(value))
-    print("-----")
+        tab = " "*klen
+        k = (tab+str(key))[-klen:]
+        print(k+":",str(value))
