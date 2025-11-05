@@ -90,6 +90,7 @@ def appupdate(cv,APPNAME,config,asset_name,community_name):
     
     for k,v in assets.items():
         if not k in instance_owners:
+            print("calculating",APPNAME,k)
             value = cv(v)
             if k in cards_by_owner:
                 card = collection.card(cards_by_owner[k]["id"])
