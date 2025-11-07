@@ -47,7 +47,7 @@ def process_leaks(community_name):
             print("no leaking attributes found")
             return
 
-        print("leakers:",[l.name for l in leakers])
+        print("leakers:",leakers)
         cards = collection.cards()
         for card in cards:
             catts = card.attributes(raw=True)
